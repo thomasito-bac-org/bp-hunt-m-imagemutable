@@ -1,0 +1,19 @@
+name: publish-image
+on:
+  workflow_dispatch:
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: build and push
+        run: |
+          echo 'FROM alpine:3.19' > Dockerfile
+          echo 'CMD ["echo", "benign v1 deploy image (published via Actions, auto-linked package)"]' >> Dockerfile
+          docker build -t ghcr.io/thomasito-bac-org/test-image-linked:v1 .
+          docker push ghcr.io/thomasito-bac-org/test-image-linked:v1
