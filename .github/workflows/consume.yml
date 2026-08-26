@@ -1,0 +1,17 @@
+name: consume-deploy-image
+on:
+  workflow_dispatch:
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: read
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: pull and run production image referenced in deploy/config.yml
+        run: |
+          docker pull ghcr.io/thomasito-bac-org/test-image-linked:v1
+          docker run --rm ghcr.io/thomasito-bac-org/test-image-linked:v1
